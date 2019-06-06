@@ -230,6 +230,10 @@
             box-shadow: 0 0 .5vh .5vh rgba(255, 255, 255, 0.8);
         }
         
+        footer li.active {
+            box-shadow: 0 0 .5vh .5vh rgba(255, 255, 255, 0.8);
+        }
+        
         footer li .cover {
             height: 16vh;
             background-size: cover;
