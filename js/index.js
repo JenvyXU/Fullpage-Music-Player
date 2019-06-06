@@ -62,23 +62,11 @@ var Footer = {
 
         this.$ul.on('click', 'li', function() {
             $(this).addClass('active').siblings().removeClass('active')
-            EventCenter.fire('select-albumn', $(this).attr('data-channel-id'))
+            EventCenter.fire('select-albumn', {
+                channelId: $(this).attr('data-channel-id'),
+                channelName: $(this).attr('data-channel-name')
+            })
         })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     },
     render: function() {
@@ -101,7 +89,7 @@ var Footer = {
         var html = ''
         channels.forEach(function(channel) {
             html += `
-            <li data-channel-id=${channel.channel_id}>
+            <li data-channel-id=${channel.channel_id} data-channel-name="${channel.name}">
                 <div class="cover" style="background-image:url(${channel.cover_middle})"></div>
                 <h3>${channel.name}</h3>
             </li>`
@@ -112,16 +100,42 @@ var Footer = {
 
 }
 
-var App = {
+var Fm = {
     init: function() {
+        this.$container = $('.page-music')
+        this.audio = new Audio()
+        this.audio.autoplay = true
         this.bind()
     },
     bind: function() {
-        EventCenter.on('select-albumn', function(e, data) {
-            console.log(data)
+        var _this = this
+        EventCenter.on('select-albumn', function(e, channelObj) {
+            _this.channelId = channelObj.channelId
+            _this.channelName = channelObj.channelName
+            _this.loadMusic(function() {
+                _this.setMusic()
+            })
         })
+    },
+    loadMusic(callback) {
+        var _this = this
+        console.log('loadMusic..')
+        $.getJSON('//jirenguapi.applinzi.com/fm/getSong.php', { channel: this.channnelId })
+            .done(function(ret) {
+                _this.song = ret['song'][0]
+                callback()
+            })
+    },
+    setMusic() {
+        this.audio.src = this.song.url
+        $('.bg').css('background-image', 'url(' + this.song.picture + ')')
+        this.$container.find('.aside figure').css('background-image', 'url(' + this.song.picture + ')')
+        this.$container.find('.detail h1').text(this.song.title)
+        console.log(this.$container.find('.detail h1'))
+        this.$container.find('.detail .author').text(this.song.artist)
+        this.$container.find('.tag').text(this.channelName)
     }
 }
 
 Footer.init()
-App.init()
+Fm.init()
