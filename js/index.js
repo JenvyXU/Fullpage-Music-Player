@@ -17,13 +17,40 @@ var Footer = {
         this.$box = this.$footer.find('.box')
         this.$leftBtn = this.$footer.find('.icon-left')
         this.$rightBtn = this.$footer.find('.icon-right')
+        this.isToStart = true
+        this.isToEnd = false
+
         this.bind()
         this.render()
     },
     bind: function() {
         var _this = this
+        var itemWidth = _this.$box.find('li').outerWidth(true)
+        var rowCount = Math.floor(_this.$box.width() / itemWidth)
         this.$rightBtn.on('click', function() {
+            if (!_this.isToEnd) {
+                _this.$ul.animate({
+                    left: '-=' + rowCount * itemWidth
+                }, 400, function() {
+                    _this.isToStart = false
+                    if (parseFloat(_this.$box.width()) - parseFloat(_this.$ul.css('left')) >= parseFloat(_this.$ul.width())) {
+                        _this.isToEnd = true
+                    }
+                })
+            }
+        })
 
+        this.$leftBtn.on('click', function() {
+            if (!_this.isToStart) {
+                _this.$ul.animate({
+                    left: '+=' + rowCount * itemWidth
+                }, 400, function() {
+                    _this.isToEnd = false
+                    if (parseFloat(_this.$ul.css('left')) >= 0) {
+                        _this.isToStart = true
+                    }
+                })
+            }
         })
 
 
@@ -47,7 +74,6 @@ var Footer = {
         $.getJSON('http://api.jirengu.com/fm/getChannels.php')
             .done(function(ret) {
                 _this.renderFooter(ret.channels)
-                console.dir(ret)
             }).fail(function() {
                 console.log('error')
             })
