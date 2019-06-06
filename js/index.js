@@ -19,6 +19,7 @@ var Footer = {
         this.$rightBtn = this.$footer.find('.icon-right')
         this.isToStart = true
         this.isToEnd = false
+        this.isAnimate //连续快速点击出bug
 
         this.bind()
         this.render()
@@ -28,11 +29,14 @@ var Footer = {
         var itemWidth = _this.$box.find('li').outerWidth(true)
         var rowCount = Math.floor(_this.$box.width() / itemWidth)
         this.$rightBtn.on('click', function() {
+            if (_this.isAnimate) return
             if (!_this.isToEnd) {
+                _this.isAnimate = true
                 _this.$ul.animate({
                     left: '-=' + rowCount * itemWidth
                 }, 400, function() {
                     _this.isToStart = false
+                    _this.isAnimate = false
                     if (parseFloat(_this.$box.width()) - parseFloat(_this.$ul.css('left')) >= parseFloat(_this.$ul.width())) {
                         _this.isToEnd = true
                     }
@@ -41,16 +45,24 @@ var Footer = {
         })
 
         this.$leftBtn.on('click', function() {
+            if (_this.isAnimate) return
             if (!_this.isToStart) {
+                _this.isAnimate = true
                 _this.$ul.animate({
                     left: '+=' + rowCount * itemWidth
                 }, 400, function() {
+                    _this.isAnimate = false
                     _this.isToEnd = false
                     if (parseFloat(_this.$ul.css('left')) >= 0) {
                         _this.isToStart = true
                     }
                 })
             }
+        })
+
+        this.$ul.on('click', 'li', function() {
+            $(this).addClass('active').siblings().removeClass('active')
+            EventCenter.fire('select-albumn', $(this).attr('data-channel-id'))
         })
 
 
@@ -100,4 +112,16 @@ var Footer = {
 
 }
 
+var App = {
+    init: function() {
+        this.bind()
+    },
+    bind: function() {
+        EventCenter.on('select-albumn', function(e, data) {
+            console.log(data)
+        })
+    }
+}
+
 Footer.init()
+App.init()
