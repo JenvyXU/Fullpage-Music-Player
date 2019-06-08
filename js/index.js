@@ -111,9 +111,7 @@ var Fm = {
         EventCenter.on('select-albumn', function(e, channelObj) {
             _this.channelId = channelObj.channelId
             _this.channelName = channelObj.channelName
-            _this.loadMusic(function() {
-                _this.setMusic()
-            })
+            _this.loadMusic()
         })
 
         this.$container.find('.btn-play').on('click', function() {
@@ -141,12 +139,13 @@ var Fm = {
         })
 
     },
-    loadMusic(callback) {
+    loadMusic() {
         var _this = this
         $.getJSON('//jirenguapi.applinzi.com/fm/getSong.php', { channel: this.channnelId })
             .done(function(ret) {
                 _this.song = ret['song'][0]
-                callback()
+                _this.setMusic()
+                _this.loadLyric()
             })
     },
     setMusic() {
@@ -164,6 +163,31 @@ var Fm = {
         sec=sec.length===2?sec:'0'+sec
         this.$container.find('.current-time').text(min+':'+sec)
         this.$container.find('.bar-progress').css('width',100*this.audio.currentTime/this.audio.duration+'%')
+        var line=this.lyricObj['0'+min+':'+sec]
+        if(line){
+            this.$container.find('.lyric p').text(line)
+        }
+    },
+    loadLyric(){
+        var _this=this
+        $.getJSON('//jirenguapi.applinzi.com/fm/getLyric.php', { sid: this.song.sid })
+            .done(function(ret) {
+                var lyric=ret.lyric
+                var lyricObj={}
+                lyric.split('\n').forEach(function(line){
+                    //[01:10.25] [01:20.25] It's a good time
+                    var times=line.match(/\d{2}:\d{2}/g)
+                    //times===['01:10', '01:20']
+                    var str=line.replace(/\[.+?\]/g,'')
+                    if(Array.isArray(times)){
+                        //把时间和歌词做成一个对象
+                        times.forEach(function(time){
+                            lyricObj[time]=str
+                        })
+                    }
+                })
+                _this.lyricObj=lyricObj
+            })
     }
 }
 
