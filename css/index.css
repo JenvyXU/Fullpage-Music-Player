@@ -171,9 +171,10 @@
         main .area-bar .bar-progress {
             position: absolute;
             height: .8vh;
-            width: 100%;
+            width: 0;
             background-color: #fff;
             border-radius: .2vh;
+            transition: width .8s;
         }
         
         main .author {

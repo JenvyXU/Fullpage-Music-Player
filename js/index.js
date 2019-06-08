@@ -116,6 +116,31 @@ var Fm = {
                 _this.setMusic()
             })
         })
+
+        this.$container.find('.btn-play').on('click', function() {
+            var $btn = $(this)
+            if ($btn.hasClass('icon-play')) {
+                $btn.removeClass('icon-play').addClass('icon-pause')
+                _this.audio.play()
+            } else {
+                $btn.removeClass('icon-pause').addClass('icon-play')
+                _this.audio.pause()
+            }
+        })
+        this.$container.find('.btn-next').on('click',function(){
+            _this.loadMusic(function(){
+                _this.setMusic()
+            })
+        })
+        this.audio.addEventListener('play',function(){
+            _this.statusClock=setInterval(function(){
+                _this.updateStatus()
+            },1000)
+        })
+        this.audio.addEventListener('pause',function(){
+            clearInterval(_this.statusClock)
+        })
+
     },
     loadMusic(callback) {
         var _this = this
@@ -134,6 +159,13 @@ var Fm = {
         console.log(this.$container.find('.detail h1'))
         this.$container.find('.detail .author').text(this.song.artist)
         this.$container.find('.tag').text(this.channelName)
+    },
+    updateStatus(){
+        var min=Math.floor(this.audio.currentTime/60)
+        var sec=Math.floor(this.audio.currentTime%60)+''
+        sec=sec.length===2?sec:'0'+sec
+        this.$container.find('.current-time').text(min+':'+sec)
+        this.$container.find('.bar-progress').css('width',100*this.audio.currentTime/this.audio.duration+'%')
     }
 }
 
