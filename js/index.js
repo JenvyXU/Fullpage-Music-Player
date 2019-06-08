@@ -8,7 +8,6 @@ var EventCenter = {
     }
     // EventCenter.fire('xxx', '666')
     // EventCenter.on('xxx', function(e, data) { console.log(data) })
-    // console.log(1)
 
 var Footer = {
     init: function() {
@@ -144,7 +143,6 @@ var Fm = {
     },
     loadMusic(callback) {
         var _this = this
-        console.log('loadMusic..')
         $.getJSON('//jirenguapi.applinzi.com/fm/getSong.php', { channel: this.channnelId })
             .done(function(ret) {
                 _this.song = ret['song'][0]
@@ -156,9 +154,9 @@ var Fm = {
         $('.bg').css('background-image', 'url(' + this.song.picture + ')')
         this.$container.find('.aside figure').css('background-image', 'url(' + this.song.picture + ')')
         this.$container.find('.detail h1').text(this.song.title)
-        console.log(this.$container.find('.detail h1'))
         this.$container.find('.detail .author').text(this.song.artist)
         this.$container.find('.tag').text(this.channelName)
+        this.$container.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
     },
     updateStatus(){
         var min=Math.floor(this.audio.currentTime/60)
