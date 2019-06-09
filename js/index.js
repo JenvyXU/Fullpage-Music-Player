@@ -19,9 +19,9 @@ var Footer = {
         this.isToStart = true
         this.isToEnd = false
         this.isAnimate //连续快速点击出bug
-
-        this.bind()
+        
         this.render()
+        this.bind()
     },
     bind: function() {
         var _this = this
@@ -59,7 +59,7 @@ var Footer = {
             }
         })
 
-        this.$ul.on('click', 'li', function() {
+        this.$footer.on('click', 'li', function() {
             $(this).addClass('active').siblings().removeClass('active')
             EventCenter.fire('select-albumn', {
                 channelId: $(this).attr('data-channel-id'),
@@ -125,9 +125,7 @@ var Fm = {
             }
         })
         this.$container.find('.btn-next').on('click',function(){
-            _this.loadMusic(function(){
-                _this.setMusic()
-            })
+            _this.loadMusic()
         })
         this.audio.addEventListener('play',function(){
             _this.statusClock=setInterval(function(){
@@ -140,8 +138,8 @@ var Fm = {
 
     },
     loadMusic() {
-        var _this = this
-        $.getJSON('//jirenguapi.applinzi.com/fm/getSong.php', { channel: this.channnelId })
+        var _this = this 
+        $.getJSON('//jirenguapi.applinzi.com/fm/getSong.php', { channel: this.channelId })
             .done(function(ret) {
                 _this.song = ret['song'][0]
                 _this.setMusic()
@@ -165,7 +163,7 @@ var Fm = {
         this.$container.find('.bar-progress').css('width',100*this.audio.currentTime/this.audio.duration+'%')
         var line=this.lyricObj['0'+min+':'+sec]
         if(line){
-            this.$container.find('.lyric p').text(line)
+            this.$container.find('.lyric p').text(line).boomText()
         }
     },
     loadLyric(){
@@ -190,6 +188,27 @@ var Fm = {
             })
     }
 }
+
+$.fn.boomText=function(type){
+    type=type||'rollIn'
+    this.html(function(){
+        var arr=$(this).text().split('').map(function(word){
+            return '<span class="boomText">'+word+'</span>'
+        })
+        return arr.join('')
+    })
+    var index=0
+    var $boomTexts=$(this).find('span')
+    var clock=setInterval(function(){
+        $boomTexts.eq(index).addClass('animated '+type)
+        index++
+        if(index>=$boomTexts.length){
+            clearInterval(clock)
+        }
+    },300)
+}
+
+
 
 Footer.init()
 Fm.init()
