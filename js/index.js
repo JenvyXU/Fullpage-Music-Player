@@ -25,10 +25,12 @@ var Footer = {
     },
     bind: function () {
         var _this = this
+        var a = 1
         var itemWidth = _this.$box.find('li').outerWidth(true)
         var rowCount = Math.floor(_this.$box.width() / itemWidth)
         this.$rightBtn.on('click', function () {
             if (_this.isAnimate) return
+            console.log(itemWidth)
             if (!_this.isToEnd) {
                 _this.isAnimate = true
                 _this.$ul.animate({
@@ -44,6 +46,7 @@ var Footer = {
         })
 
         this.$leftBtn.on('click', function () {
+            console.log('left')
             if (_this.isAnimate) return
             if (!_this.isToStart) {
                 _this.isAnimate = true
@@ -73,7 +76,6 @@ var Footer = {
         $.getJSON('https://jirenguapi.applinzi.com/fm/getChannels.php')
             .done(function (ret) {
                 _this.renderFooter(ret.channels)
-                console.log(ret.channels)
             }).fail(function () {
                 console.log('error')
             })
@@ -107,13 +109,16 @@ var Fm = {
         this.audio.autoplay = true
         this.scrollTitle()
         this.bind()
+        this.firstPageMusic()
     },
     bind: function () {
         var _this = this
         EventCenter.on('select-albumn', function (e, channelObj) {
             _this.channelId = channelObj.channelId
             _this.channelName = channelObj.channelName
+            clearInterval(_this.statusClock)
             _this.loadMusic()
+
         })
 
         this.$container.find('.btn-play').on('click', function () {
@@ -127,6 +132,7 @@ var Fm = {
             }
         })
         this.$container.find('.btn-next').on('click', function () {
+            clearInterval(_this.statusClock)
             _this.loadMusic()
         })
         this.audio.addEventListener('play', function () {
@@ -137,8 +143,23 @@ var Fm = {
         this.audio.addEventListener('pause', function () {
             clearInterval(_this.statusClock)
         })
+        this.audio.addEventListener('ended', function () {
+            clearInterval(_this.statusClock)
+            _this.loadMusic()
+        })
+        this.$container.find('.bar').on('click', function (e) {
+            var currentTime = parseFloat(e.offsetX) / parseFloat($(this).width()) * _this.audio.duration
+            _this.audio.currentTime = currentTime
+        })
 
 
+    },
+
+    firstPageMusic() {
+        this.channelId = 'public_shiguang_90hou'
+        this.channelName = '90后'
+        this.loadMusic()
+        this.$container.find('.btn-play').removeClass('icon-pause').addClass('icon-play')
     },
     loadMusic() {
         var _this = this
@@ -148,7 +169,8 @@ var Fm = {
                 _this.setMusic()
                 _this.loadLyric()
             })
-        this.$container.find('.song-name h1').stop(true,true)
+        this.$container.find('.song-name h1').stop(true, true)
+        this.$container.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
     },
     setMusic() {
         this.audio.src = this.song.url
@@ -157,8 +179,7 @@ var Fm = {
         this.$container.find('.detail h1').text(this.song.title)
         this.$container.find('.detail .author').text(this.song.artist)
         this.$container.find('.tag').text(this.channelName)
-        this.$container.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
-        
+        //this.$container.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
     },
     updateStatus() {
         var min = Math.floor(this.audio.currentTime / 60)
@@ -190,6 +211,7 @@ var Fm = {
                     }
                 })
                 _this.lyricObj = lyricObj
+
             })
     },
     scrollTitle() {
@@ -198,10 +220,9 @@ var Fm = {
             var outterWidth = parseFloat(_this.$container.find('.song-name').css('width'))
             var innerWidth = parseFloat(_this.$container.find('.song-name h1').css('width'))
             if (outterWidth < innerWidth) {
-                console.log(outterWidth - innerWidth)
-                _this.$container.find('.song-name h1').animate({ left: outterWidth - innerWidth }, 4000,'linear', function () {
+                _this.$container.find('.song-name h1').animate({ left: outterWidth - innerWidth }, 4000, 'linear', function () {
                     _this.$container.find('.song-name h1').css({ left: 0 })
-                }).animate({left:0},function(){
+                }).animate({ left: 0 }, function () {
                     swipe()
                 })
             }
@@ -226,9 +247,10 @@ $.fn.boomText = function (type) {
         if (index >= $boomTexts.length) {
             clearInterval(clock)
         }
-    }, 100)
+    }, 200)
 }
 
 
 Footer.init()
 Fm.init()
+var xxxx = $('.box li')
