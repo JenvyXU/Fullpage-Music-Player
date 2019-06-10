@@ -60,6 +60,7 @@ section {
     background: url('https://i.loli.net/2019/06/03/5cf521559576158988.jpg');
     background-size: cover;
     filter: blur(4px);
+    transition: all .2s;
 }
 
 .bg::before {
@@ -93,6 +94,7 @@ main .aside>figure {
     background-image: url('https://i.loli.net/2019/06/03/5cf521559576158988.jpg');
     background-size: cover;
     background-position: center center;
+    transition: all .5s;
 }
 
 main .aside .actions {
@@ -142,9 +144,6 @@ main .detail h1 {
     font-size: 6vh;
     margin-top: 2vh;
     white-space:nowrap;
-    /* width: 100%;
-    height: 8vh;
-    overflow: hidden; */
 }
 
 
@@ -155,7 +154,7 @@ main .icons {
 }
 
 main .icons li {
-    flex: 1;
+   margin-right: 6vh;
 }
 
 main .icons .iconfont {
@@ -189,7 +188,6 @@ main .area-bar .bar-progress {
     width: 0;
     background-color: #fff;
     border-radius: .2vh;
-    transition: width .8s;
 }
 
 main .author {
@@ -254,7 +252,7 @@ footer li .cover {
     height: 16vh;
     background-size: cover;
     background-position: center center;
-    background-image: url('https://i.loli.net/2019/06/03/5cf521559576158988.jpg')
+    /* background-image: url('https://i.loli.net/2019/06/03/5cf521559576158988.jpg') */
 }
 
 footer h3 {
@@ -265,7 +263,6 @@ footer h3 {
 
 footer .iconfont {
     position: absolute;
-    top: 4vh;
     font-size: 6vh;
     color: rgba(255, 255, 255, .4);
     opacity: 0;
@@ -283,10 +280,12 @@ footer:hover .iconfont {
 
 footer:hover .icon-left {
     left: -8vh;
+    top:25%;
 }
 
 footer .icon-right {
     right: -8vh;
+    top:25%;
 }
 .boomText{
     display: inline-block;
