@@ -9,9 +9,9 @@ html, body, main{
 }
 
 body {
-  font: 14px/1.5 Arial;
-}
-
+  font: 14px/1.5 Arial, Helvetica, sans-serif;
+} 
+  
 a {
   text-decoration: none;
   color: #444;
