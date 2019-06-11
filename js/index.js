@@ -25,12 +25,10 @@ var Footer = {
     },
     bind: function () {
         var _this = this
-        var a = 1
         var itemWidth = _this.$box.find('li').outerWidth(true)
         var rowCount = Math.floor(_this.$box.width() / itemWidth)
         this.$rightBtn.on('click', function () {
             if (_this.isAnimate) return
-            console.log(itemWidth)
             if (!_this.isToEnd) {
                 _this.isAnimate = true
                 _this.$ul.animate({
@@ -46,7 +44,6 @@ var Footer = {
         })
 
         this.$leftBtn.on('click', function () {
-            console.log('left')
             if (_this.isAnimate) return
             if (!_this.isToStart) {
                 _this.isAnimate = true
@@ -96,7 +93,7 @@ var Footer = {
                 <h3>${channel.name}</h3>
             </li>`
         })
-        this.$footer.find('ul').html(html)
+        this.$footer.find('ul').append(html)
         this.setStyle()
     }
 
@@ -107,9 +104,11 @@ var Fm = {
         this.$container = $('.page-music')
         this.audio = new Audio()
         this.audio.autoplay = true
+        this.currentSong = null
+        this.collections = this.loadFromLocal()
         this.scrollTitle()
         this.bind()
-        this.firstPageMusic()
+        this.playCollections()
     },
     bind: function () {
         var _this = this
@@ -151,35 +150,64 @@ var Fm = {
             var currentTime = parseFloat(e.offsetX) / parseFloat($(this).width()) * _this.audio.duration
             _this.audio.currentTime = currentTime
         })
-
-
+        this.$container.find('.btn-collect').on('click', function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass('active')
+                delete _this.collections[_this.currentSong.sid]
+            } else {
+                $(this).addClass('active')
+                _this.collections[_this.currentSong.sid] = _this.currentSong
+            }
+            _this.saveToLocal()
+        })
     },
 
-    firstPageMusic() {
-        this.channelId = 'public_shiguang_90hou'
-        this.channelName = '90后'
-        this.loadMusic()
-        this.$container.find('.btn-play').removeClass('icon-pause').addClass('icon-play')
+    playCollections() {
+        if (Object.keys(this.collections).length !== 0) {
+            EventCenter.fire('select-albumn', {
+                channelId: 'collections',
+                channelName: '我的收藏'
+            })
+        } else {
+            EventCenter.fire('select-albumn', {
+                channelId: 'public_shiguang_90hou',
+                channelName: '90后'
+            })
+        }
     },
     loadMusic() {
         var _this = this
-        $.getJSON('https://jirenguapi.applinzi.com/fm/getSong.php', { channel: this.channelId })
-            .done(function (ret) {
-                _this.song = ret['song'][0]
-                _this.setMusic()
-                _this.loadLyric()
-            })
+        if (_this.channelId === 'collections' && Object.keys(_this.collections).length !== 0) {
+            _this.song = _this.loadCollections()
+            _this.setMusic()
+            _this.loadLyric()
+
+        } else {
+            $.getJSON('https://jirenguapi.applinzi.com/fm/getSong.php', { channel: this.channelId })
+                .done(function (ret) {
+                    _this.song = ret['song'][0]
+                    _this.setMusic()
+                    _this.loadLyric()
+                })
+        }
+
         this.$container.find('.song-name h1').stop(true, true)
         this.$container.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
     },
     setMusic() {
         this.audio.src = this.song.url
+        this.currentSong = this.song
         $('.bg').css('background-image', 'url(' + this.song.picture + ')')
         this.$container.find('.aside figure').css('background-image', 'url(' + this.song.picture + ')')
         this.$container.find('.detail h1').text(this.song.title)
         this.$container.find('.detail .author').text(this.song.artist)
         this.$container.find('.tag').text(this.channelName)
-        //this.$container.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
+        this.$container.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
+        if (this.collections[this.song.sid]) {
+            this.$container.find('.btn-collect').addClass('active')
+        } else {
+            this.$container.find('.btn-collect').removeClass('active')
+        }
     },
     updateStatus() {
         var min = Math.floor(this.audio.currentTime / 60)
@@ -228,6 +256,19 @@ var Fm = {
             }
         }
         swipe()
+    },
+    loadFromLocal() {
+        return JSON.parse(localStorage['collections'] || '{}')
+    },
+    saveToLocal() {
+        localStorage['collections'] = JSON.stringify(this.collections)
+    },
+    loadCollections() {
+        var keyArr = Object.keys(this.collections)
+        if (keyArr.length === 0) return
+        var randomIndex = Math.floor(Math.random() * keyArr.length)
+        var randomSid = keyArr[randomIndex]
+        return this.loadFromLocal()[randomSid]
     }
 }
 
@@ -253,4 +294,3 @@ $.fn.boomText = function (type) {
 
 Footer.init()
 Fm.init()
-var xxxx = $('.box li')

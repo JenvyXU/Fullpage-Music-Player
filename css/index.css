@@ -115,7 +115,7 @@ main .aside .iconfont:hover {
     color: #fff;
 }
 
-main .aside .iconfont:active {
+main .aside .iconfont.active {
     color: #ff5722;
 }
 
@@ -254,6 +254,12 @@ footer li .cover {
     background-position: center center;
     /* background-image: url('https://i.loli.net/2019/06/03/5cf521559576158988.jpg') */
 }
+footer li .cover.collections {
+    background-image: url('../img/collection.jpg');
+    background-size: cover;
+    background-position: center center;
+}
+
 
 footer h3 {
     font-size: 2vh;
@@ -278,7 +284,7 @@ footer:hover .iconfont {
     color: rgba(255, 255, 255, .8)
 }
 
-footer:hover .icon-left {
+footer .icon-left {
     left: -8vh;
     top:25%;
 }
