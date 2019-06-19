@@ -1,0 +1,27 @@
+{
+  "name": "radio",
+  "version": "1.0.0",
+  "private": true,
+  "description": ">链接：https://github.com/JenvyXU/Web-FM/index.html",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JenvyXU/Fullpage-Music-Player.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/JenvyXU/Fullpage-Music-Player#readme",
+  "devDependencies": {
+    "css-loader": "^3.0.0",
+    "file-loader": "^4.0.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4"
+  },
+  "dependencies": {
+    "jquery": "^2.2.4"
+  }
+}
